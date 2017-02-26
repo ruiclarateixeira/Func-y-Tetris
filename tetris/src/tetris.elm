@@ -4,41 +4,65 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Board exposing (..)
+
+
+main =
+    Html.program
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }
+
 
 
 -- Model
 
 
-type alias Piece =
-    { color : String
-    , position : Int
-    , shape : String
-    }
+type alias Model =
+    Board
 
 
-drawShape : Piece -> Html msg
-drawShape piece =
-    div
-        [ class "piece"
-        , style
-            [ ( "color", "green" )
-            ]
-        ]
-        [ text "Piece" ]
+
+-- Update
+
+
+type Msg
+    = Flip
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        Flip ->
+            ( model, Cmd.none )
+
+
+
+-- Init
+
+
+init : ( Model, Cmd Msg )
+init =
+    ( initBoard 10 5, Cmd.none )
+
+
+
+-- Subscriptions
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
 
 
 
 -- VIEW
 
 
-view : Html msg
-view =
+view : Board -> Html Msg
+view board =
     body []
-        [ drawShape { color = "blue", position = 1, shape = "L" }
+        [ renderBoard board
         ]
-
-
-main : Html msg
-main =
-    view
