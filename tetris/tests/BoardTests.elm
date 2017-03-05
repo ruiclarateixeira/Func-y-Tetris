@@ -42,13 +42,19 @@ all =
                         newBoard =
                             Board.newPiece board newPiece
                     in
-                        Expect.equal board
+                        Expect.equal newBoard
                             { rows =
                                 [ { cells = repeat 10 { color = (Just "black") } }
                                 , { cells = repeat 10 { color = (Just "black") } }
                                 , { cells = repeat 10 { color = (Just "black") } }
                                 , { cells = repeat 10 { color = (Just "black") } }
-                                , { cells = repeat 10 { color = (Just "black") } }
+                                , { cells =
+                                        List.concat
+                                            [ (repeat 4 { color = (Just "black") })
+                                            , (repeat 2 { color = (Just "blue") })
+                                            , (repeat 4 { color = (Just "black") })
+                                            ]
+                                  }
                                 ]
                             }
             ]

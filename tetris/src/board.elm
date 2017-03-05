@@ -32,15 +32,50 @@ initBoard height width =
 newPiece : Board -> Piece -> Board
 newPiece board piece =
     let
+        firstRowCells =
+            (Maybe.withDefault { cells = [] } (List.head board.rows)).cells
+
+        offset rowSize =
+            if (rem rowSize 2) == 0 then
+                1
+            else
+                0
+
         increment : ( Int, Int ) -> ( Int, Int )
         increment ( x, y ) =
-            ( x, y + (length board.rows) )
+            ( x + (length firstRowCells) // 2 - (offset (length firstRowCells)), y + (length board.rows - 1) )
 
         position : List ( Int, Int )
         position =
             List.map increment piece.coordinates
+
+        newPiece =
+            { pieceType = piece.pieceType, color = piece.color, coordinates = position }
     in
-        board
+        placePiece board newPiece
+
+
+placePiece : Board -> Piece -> Board
+placePiece board piece =
+    let
+        updateCell : ( Int, Int ) -> Maybe Cell
+        updateCell position =
+            if (List.member position piece.coordinates) then
+                (Just { color = (Just piece.color) })
+            else
+                Nothing
+
+        updateCells : Int -> Row -> Row
+        updateCells rowIndex row =
+            { cells =
+                List.indexedMap
+                    (\cellIndex cell ->
+                        Maybe.withDefault cell (updateCell ( cellIndex, rowIndex ))
+                    )
+                    row.cells
+            }
+    in
+        { rows = List.indexedMap updateCells board.rows }
 
 
 
