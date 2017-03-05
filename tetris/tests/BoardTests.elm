@@ -1,7 +1,7 @@
 module BoardTests exposing (..)
 
 import Test exposing (..)
-import Array exposing (length, get, filter)
+import List exposing (length, filter, repeat)
 import Maybe exposing (withDefault)
 import Expect
 import Board
@@ -27,6 +27,29 @@ all =
                         lengthFilter =
                             \row -> (length row.cells) /= 5
                     in
-                        Expect.equal (length (Array.filter lengthFilter board.rows)) 0
+                        Expect.equal (length (List.filter lengthFilter board.rows)) 0
+            ]
+        , describe "New Piece Tests"
+            [ test "New piece works correctly" <|
+                \() ->
+                    let
+                        board =
+                            Board.initBoard 5 10
+
+                        newPiece =
+                            Board.initPiece Board.LShape "blue"
+
+                        newBoard =
+                            Board.newPiece board newPiece
+                    in
+                        Expect.equal board
+                            { rows =
+                                [ { cells = repeat 10 { color = (Just "black") } }
+                                , { cells = repeat 10 { color = (Just "black") } }
+                                , { cells = repeat 10 { color = (Just "black") } }
+                                , { cells = repeat 10 { color = (Just "black") } }
+                                , { cells = repeat 10 { color = (Just "black") } }
+                                ]
+                            }
             ]
         ]
