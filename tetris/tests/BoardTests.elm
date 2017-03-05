@@ -41,8 +41,11 @@ all =
 
                         newBoard =
                             Board.newPiece board newPiece
+
+                        boardWithPiece =
+                            Board.projectBoard newBoard
                     in
-                        Expect.equal newBoard
+                        Expect.equal boardWithPiece
                             { rows =
                                 [ { cells = repeat 10 { color = (Just "black") } }
                                 , { cells = repeat 10 { color = (Just "black") } }
@@ -56,6 +59,58 @@ all =
                                             ]
                                   }
                                 ]
+                            , currentPiece =
+                                (Just
+                                    { pieceType = Board.LShape
+                                    , color = "blue"
+                                    , coordinates = [ ( 4, 4 ), ( 4, 5 ), ( 4, 6 ), ( 5, 4 ) ]
+                                    }
+                                )
+                            }
+            ]
+        , describe "Move Piece tests"
+            [ test "Move Piece works correctly" <|
+                \() ->
+                    let
+                        board =
+                            Board.initBoard 5 10
+
+                        newPiece =
+                            Board.initPiece Board.LShape "blue"
+
+                        newBoard =
+                            Board.newPiece board newPiece
+
+                        boardWithPiece =
+                            Board.projectBoard (Board.movePiece newBoard Board.Down)
+                    in
+                        Expect.equal boardWithPiece
+                            { rows =
+                                [ { cells = repeat 10 { color = (Just "black") } }
+                                , { cells = repeat 10 { color = (Just "black") } }
+                                , { cells = repeat 10 { color = (Just "black") } }
+                                , { cells =
+                                        List.concat
+                                            [ (repeat 4 { color = (Just "black") })
+                                            , (repeat 2 { color = (Just "blue") })
+                                            , (repeat 4 { color = (Just "black") })
+                                            ]
+                                  }
+                                , { cells =
+                                        List.concat
+                                            [ (repeat 4 { color = (Just "black") })
+                                            , (repeat 1 { color = (Just "blue") })
+                                            , (repeat 5 { color = (Just "black") })
+                                            ]
+                                  }
+                                ]
+                            , currentPiece =
+                                (Just
+                                    { pieceType = Board.LShape
+                                    , color = "blue"
+                                    , coordinates = [ ( 4, 3 ), ( 4, 4 ), ( 4, 5 ), ( 5, 3 ) ]
+                                    }
+                                )
                             }
             ]
         ]

@@ -14,7 +14,25 @@ type alias Row =
 
 
 type alias Board =
-    { rows : List Row }
+    { rows : List Row
+    , currentPiece : Maybe Piece
+    }
+
+
+type PieceType
+    = LShape
+    | None
+
+
+type alias Piece =
+    { pieceType : PieceType
+    , color : String
+    , coordinates : List ( Int, Int )
+    }
+
+
+type Direction
+    = Down
 
 
 
@@ -26,6 +44,7 @@ initBoard height width =
     { rows =
         repeat height
             ({ cells = repeat width { color = (Just "black") } })
+    , currentPiece = Nothing
     }
 
 
@@ -52,12 +71,15 @@ newPiece board piece =
         newPiece =
             { pieceType = piece.pieceType, color = piece.color, coordinates = position }
     in
-        placePiece board newPiece
+        { rows = board.rows, currentPiece = (Just newPiece) }
 
 
-placePiece : Board -> Piece -> Board
-placePiece board piece =
+projectBoard : Board -> Board
+projectBoard board =
     let
+        piece =
+            Maybe.withDefault (initPiece None "") board.currentPiece
+
         updateCell : ( Int, Int ) -> Maybe Cell
         updateCell position =
             if (List.member position piece.coordinates) then
@@ -75,22 +97,31 @@ placePiece board piece =
                     row.cells
             }
     in
-        { rows = List.indexedMap updateCells board.rows }
+        { rows = List.indexedMap updateCells board.rows, currentPiece = (Just piece) }
+
+
+movePiece : Board -> Direction -> Board
+movePiece board direction =
+    let
+        ( xOffset, yOffset ) =
+            case direction of
+                Down ->
+                    ( 0, -1 )
+
+        currentPiece =
+            Maybe.withDefault (initPiece None "") board.currentPiece
+
+        newPiece =
+            { color = currentPiece.color
+            , pieceType = currentPiece.pieceType
+            , coordinates = List.map (\( x, y ) -> ( x + xOffset, y + yOffset )) currentPiece.coordinates
+            }
+    in
+        { rows = board.rows, currentPiece = (Just newPiece) }
 
 
 
 -- Piece Functions
-
-
-type PieceType
-    = LShape
-
-
-type alias Piece =
-    { pieceType : PieceType
-    , color : String
-    , coordinates : List ( Int, Int )
-    }
 
 
 initPiece : PieceType -> String -> Piece
@@ -102,6 +133,12 @@ initPiece pieceType color =
             , coordinates = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 1, 0 ) ]
             }
 
+        None ->
+            { color = "none"
+            , pieceType = None
+            , coordinates = []
+            }
+
 
 
 -- Render Functions
@@ -111,7 +148,7 @@ renderBoard : Board -> Html msg
 renderBoard board =
     div
         [ class "Board" ]
-        (List.map renderRow board.rows)
+        (reverse (List.map renderRow board.rows))
 
 
 renderRow : Row -> Html msg
@@ -125,8 +162,17 @@ renderRow row =
 
 renderCell : Cell -> Html msg
 renderCell cell =
-    div
-        [ class "Cell"
-        , style [ ( "float", "left" ) ]
-        ]
-        [ text (Maybe.withDefault "none" cell.color) ]
+    let
+        backgroundColor =
+            Maybe.withDefault "white" cell.color
+    in
+        div
+            [ class "Cell"
+            , style
+                [ ( "float", "left" )
+                , ( "height", "30px" )
+                , ( "width", "30px" )
+                , ( "background-color", backgroundColor )
+                ]
+            ]
+            [ text "" ]

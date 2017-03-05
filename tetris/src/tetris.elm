@@ -5,8 +5,10 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Board exposing (..)
+import Time exposing (..)
 
 
+main : Program Never Model Msg
 main =
     Html.program
         { init = init
@@ -30,6 +32,21 @@ type alias Model =
 
 type Msg
     = Flip
+    | TimeTick Time
+
+
+updateOnTimeTick : Model -> Model
+updateOnTimeTick board =
+    let
+        currentPiece =
+            Maybe.withDefault (initPiece None "") board.currentPiece
+    in
+        case currentPiece.pieceType of
+            None ->
+                newPiece board (initPiece LShape "blue")
+
+            _ ->
+                movePiece board Down
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -38,6 +55,9 @@ update msg model =
         Flip ->
             ( model, Cmd.none )
 
+        TimeTick time ->
+            ( updateOnTimeTick model, Cmd.none )
+
 
 
 -- Init
@@ -45,7 +65,7 @@ update msg model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( initBoard 10 5, Cmd.none )
+    ( initBoard 20 10, Cmd.none )
 
 
 
@@ -54,7 +74,7 @@ init =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    every second TimeTick
 
 
 
@@ -64,5 +84,5 @@ subscriptions model =
 view : Board -> Html Msg
 view board =
     body []
-        [ renderBoard board
+        [ renderBoard (projectBoard board)
         ]
