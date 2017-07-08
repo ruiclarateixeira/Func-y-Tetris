@@ -16,6 +16,7 @@ type alias Row =
 type alias Board =
     { rows : List Row
     , currentPiece : Maybe Piece
+    , lost : Bool
     }
 
 
@@ -45,6 +46,7 @@ initBoard height width =
         repeat height
             ({ cells = repeat width { color = (Just "black") } })
     , currentPiece = Nothing
+    , lost = False
     }
 
 
@@ -71,15 +73,16 @@ newPiece board piece =
         newPiece =
             { pieceType = piece.pieceType, color = piece.color, coordinates = position }
     in
-        { rows = board.rows, currentPiece = (Just newPiece) }
+        { rows = board.rows, currentPiece = (Just newPiece), lost = board.lost }
 
 
-projectBoard : Board -> Board
-projectBoard board =
+
+-- Adds piece to the board in the correct coordinates
+
+
+placePiece : Board -> Piece -> Board
+placePiece board piece =
     let
-        piece =
-            Maybe.withDefault (initPiece None "") board.currentPiece
-
         updateCell : ( Int, Int ) -> Maybe Cell
         updateCell position =
             if (List.member position piece.coordinates) then
@@ -97,7 +100,33 @@ projectBoard board =
                     row.cells
             }
     in
-        { rows = List.indexedMap updateCells board.rows, currentPiece = (Just piece) }
+        { rows = List.indexedMap updateCells board.rows, currentPiece = board.currentPiece, lost = board.lost }
+
+
+
+-- Project board to be displayed
+-- Places the current piece in the correct cells
+
+
+projectBoard : Board -> Board
+projectBoard board =
+    let
+        piece =
+            Maybe.withDefault (initPiece None "") board.currentPiece
+    in
+        placePiece board piece
+
+
+canMove : Board -> Bool
+canMove board =
+    let
+        currentPiece =
+            Maybe.withDefault (initPiece None "") board.currentPiece
+
+        piecesInLastRow =
+            filter (\( x, y ) -> y == 0) currentPiece.coordinates
+    in
+        length piecesInLastRow == 0
 
 
 movePiece : Board -> Direction -> Board
@@ -112,16 +141,25 @@ movePiece board direction =
             Maybe.withDefault (initPiece None "") board.currentPiece
 
         newPiece =
-            { color = currentPiece.color
-            , pieceType = currentPiece.pieceType
-            , coordinates = List.map (\( x, y ) -> ( x + xOffset, y + yOffset )) currentPiece.coordinates
-            }
+            if canMove board then
+                { color = currentPiece.color
+                , pieceType = currentPiece.pieceType
+                , coordinates = List.map (\( x, y ) -> ( x + xOffset, y + yOffset )) currentPiece.coordinates
+                }
+            else
+                (initPiece None "")
+
+        newBoard =
+            if canMove board then
+                board
+            else
+                placePiece board currentPiece
     in
-        { rows = board.rows, currentPiece = (Just newPiece) }
+        { rows = newBoard.rows, currentPiece = (Just newPiece), lost = newBoard.lost }
 
 
 
--- Piece Functions
+{- Piece Functions -}
 
 
 initPiece : PieceType -> String -> Piece
@@ -141,7 +179,8 @@ initPiece pieceType color =
 
 
 
--- Render Functions
+{- Render Functions -}
+-- render board as a sequence of rendered rows
 
 
 renderBoard : Board -> Html msg
@@ -151,6 +190,10 @@ renderBoard board =
         (reverse (List.map renderRow board.rows))
 
 
+
+-- Render row as a sequence of rendered cells
+
+
 renderRow : Row -> Html msg
 renderRow row =
     div
@@ -158,6 +201,10 @@ renderRow row =
         , style [ ( "clear", "both" ) ]
         ]
         (List.map renderCell row.cells)
+
+
+
+-- Render cell as an HTML colored div
 
 
 renderCell : Cell -> Html msg

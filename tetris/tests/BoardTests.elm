@@ -66,6 +66,7 @@ all =
                                     , coordinates = [ ( 4, 4 ), ( 4, 5 ), ( 4, 6 ), ( 5, 4 ) ]
                                     }
                                 )
+                            , lost = False
                             }
             ]
         , describe "Move Piece tests"
@@ -111,6 +112,7 @@ all =
                                     , coordinates = [ ( 4, 3 ), ( 4, 4 ), ( 4, 5 ), ( 5, 3 ) ]
                                     }
                                 )
+                            , lost = False
                             }
             ]
         ]
