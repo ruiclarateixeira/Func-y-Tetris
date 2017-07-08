@@ -1,12 +1,23 @@
 module Board exposing (..)
 
 import List exposing (..)
+import List.Extra exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
 
-type alias Cell =
-    { color : Maybe String }
+type Cell
+    = Filled
+    | Empty
+
+
+type PieceType
+    = LShape
+    | None
+
+
+type Direction
+    = Down
 
 
 type alias Row =
@@ -20,20 +31,10 @@ type alias Board =
     }
 
 
-type PieceType
-    = LShape
-    | None
-
-
 type alias Piece =
     { pieceType : PieceType
-    , color : String
     , coordinates : List ( Int, Int )
     }
-
-
-type Direction
-    = Down
 
 
 
@@ -44,7 +45,7 @@ initBoard : Int -> Int -> Board
 initBoard height width =
     { rows =
         repeat height
-            ({ cells = repeat width { color = (Just "black") } })
+            ({ cells = repeat width Empty })
     , currentPiece = Nothing
     , lost = False
     }
@@ -71,7 +72,7 @@ newPiece board piece =
             List.map increment piece.coordinates
 
         newPiece =
-            { pieceType = piece.pieceType, color = piece.color, coordinates = position }
+            { pieceType = piece.pieceType, coordinates = position }
     in
         { rows = board.rows, currentPiece = (Just newPiece), lost = board.lost }
 
@@ -86,7 +87,7 @@ placePiece board piece =
         updateCell : ( Int, Int ) -> Maybe Cell
         updateCell position =
             if (List.member position piece.coordinates) then
-                (Just { color = (Just piece.color) })
+                (Just Filled)
             else
                 Nothing
 
@@ -112,7 +113,7 @@ projectBoard : Board -> Board
 projectBoard board =
     let
         piece =
-            Maybe.withDefault (initPiece None "") board.currentPiece
+            Maybe.withDefault (initPiece None) board.currentPiece
     in
         placePiece board piece
 
@@ -121,12 +122,19 @@ canMove : Board -> Bool
 canMove board =
     let
         currentPiece =
-            Maybe.withDefault (initPiece None "") board.currentPiece
+            Maybe.withDefault (initPiece None) board.currentPiece
 
-        piecesInLastRow =
+        cellsInLastRow =
             filter (\( x, y ) -> y == 0) currentPiece.coordinates
+
+        row : Int -> List Cell
+        row rowIndex =
+            (Maybe.withDefault { cells = [] } (getAt rowIndex board.rows)).cells
+
+        cellsWhichWillEnterAFilledCell =
+            filter (\( x, y ) -> (Maybe.withDefault Empty (getAt x (row y)) /= Empty)) currentPiece.coordinates
     in
-        length piecesInLastRow == 0
+        length cellsInLastRow == 0 && length cellsWhichWillEnterAFilledCell == 0
 
 
 movePiece : Board -> Direction -> Board
@@ -138,16 +146,15 @@ movePiece board direction =
                     ( 0, -1 )
 
         currentPiece =
-            Maybe.withDefault (initPiece None "") board.currentPiece
+            Maybe.withDefault (initPiece None) board.currentPiece
 
         newPiece =
             if canMove board then
-                { color = currentPiece.color
-                , pieceType = currentPiece.pieceType
+                { pieceType = currentPiece.pieceType
                 , coordinates = List.map (\( x, y ) -> ( x + xOffset, y + yOffset )) currentPiece.coordinates
                 }
             else
-                (initPiece None "")
+                (initPiece None)
 
         newBoard =
             if canMove board then
@@ -162,18 +169,16 @@ movePiece board direction =
 {- Piece Functions -}
 
 
-initPiece : PieceType -> String -> Piece
-initPiece pieceType color =
+initPiece : PieceType -> Piece
+initPiece pieceType =
     case pieceType of
         LShape ->
             { pieceType = LShape
-            , color = color
             , coordinates = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 1, 0 ) ]
             }
 
         None ->
-            { color = "none"
-            , pieceType = None
+            { pieceType = None
             , coordinates = []
             }
 
@@ -211,7 +216,12 @@ renderCell : Cell -> Html msg
 renderCell cell =
     let
         backgroundColor =
-            Maybe.withDefault "white" cell.color
+            case cell of
+                Filled ->
+                    "blue"
+
+                Empty ->
+                    "black"
     in
         div
             [ class "Cell"

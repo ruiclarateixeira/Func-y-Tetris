@@ -4,7 +4,7 @@ import Test exposing (..)
 import List exposing (length, filter, repeat)
 import Maybe exposing (withDefault)
 import Expect
-import Board
+import Board exposing (..)
 
 
 all : Test
@@ -37,7 +37,7 @@ all =
                             Board.initBoard 5 10
 
                         newPiece =
-                            Board.initPiece Board.LShape "blue"
+                            Board.initPiece Board.LShape
 
                         newBoard =
                             Board.newPiece board newPiece
@@ -47,22 +47,21 @@ all =
                     in
                         Expect.equal boardWithPiece
                             { rows =
-                                [ { cells = repeat 10 { color = (Just "black") } }
-                                , { cells = repeat 10 { color = (Just "black") } }
-                                , { cells = repeat 10 { color = (Just "black") } }
-                                , { cells = repeat 10 { color = (Just "black") } }
+                                [ { cells = repeat 10 Empty }
+                                , { cells = repeat 10 Empty }
+                                , { cells = repeat 10 Empty }
+                                , { cells = repeat 10 Empty }
                                 , { cells =
                                         List.concat
-                                            [ (repeat 4 { color = (Just "black") })
-                                            , (repeat 2 { color = (Just "blue") })
-                                            , (repeat 4 { color = (Just "black") })
+                                            [ (repeat 4 Empty)
+                                            , (repeat 2 Filled)
+                                            , (repeat 4 Empty)
                                             ]
                                   }
                                 ]
                             , currentPiece =
                                 (Just
                                     { pieceType = Board.LShape
-                                    , color = "blue"
                                     , coordinates = [ ( 4, 4 ), ( 4, 5 ), ( 4, 6 ), ( 5, 4 ) ]
                                     }
                                 )
@@ -77,7 +76,7 @@ all =
                             Board.initBoard 5 10
 
                         newPiece =
-                            Board.initPiece Board.LShape "blue"
+                            Board.initPiece Board.LShape
 
                         newBoard =
                             Board.newPiece board newPiece
@@ -87,28 +86,27 @@ all =
                     in
                         Expect.equal boardWithPiece
                             { rows =
-                                [ { cells = repeat 10 { color = (Just "black") } }
-                                , { cells = repeat 10 { color = (Just "black") } }
-                                , { cells = repeat 10 { color = (Just "black") } }
+                                [ { cells = repeat 10 Empty }
+                                , { cells = repeat 10 Empty }
+                                , { cells = repeat 10 Empty }
                                 , { cells =
                                         List.concat
-                                            [ (repeat 4 { color = (Just "black") })
-                                            , (repeat 2 { color = (Just "blue") })
-                                            , (repeat 4 { color = (Just "black") })
+                                            [ (repeat 4 Empty)
+                                            , (repeat 2 Filled)
+                                            , (repeat 4 Empty)
                                             ]
                                   }
                                 , { cells =
                                         List.concat
-                                            [ (repeat 4 { color = (Just "black") })
-                                            , (repeat 1 { color = (Just "blue") })
-                                            , (repeat 5 { color = (Just "black") })
+                                            [ (repeat 4 Empty)
+                                            , (repeat 1 Filled)
+                                            , (repeat 5 Empty)
                                             ]
                                   }
                                 ]
                             , currentPiece =
                                 (Just
                                     { pieceType = Board.LShape
-                                    , color = "blue"
                                     , coordinates = [ ( 4, 3 ), ( 4, 4 ), ( 4, 5 ), ( 5, 3 ) ]
                                     }
                                 )
