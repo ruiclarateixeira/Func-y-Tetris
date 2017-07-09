@@ -118,23 +118,30 @@ projectBoard board =
         placePiece board piece
 
 
-canMove : Board -> Bool
-canMove board =
-    let
-        currentPiece =
-            Maybe.withDefault (initPiece None) board.currentPiece
 
+-- Can the piece move to a new place without:
+-- 1. Going further down than the min y
+-- 2. Entering other filled cells
+
+
+canMove : Board -> Piece -> Bool
+canMove board piece =
+    let
         cellsInLastRow =
-            filter (\( x, y ) -> y == 0) currentPiece.coordinates
+            filter (\( x, y ) -> y < 0) piece.coordinates
 
         row : Int -> List Cell
         row rowIndex =
             (Maybe.withDefault { cells = [] } (getAt rowIndex board.rows)).cells
 
         cellsWhichWillEnterAFilledCell =
-            filter (\( x, y ) -> (Maybe.withDefault Empty (getAt x (row y)) /= Empty)) currentPiece.coordinates
+            filter (\( x, y ) -> (Maybe.withDefault Empty (getAt x (row y)) /= Empty)) piece.coordinates
     in
         length cellsInLastRow == 0 && length cellsWhichWillEnterAFilledCell == 0
+
+
+
+-- Move piece coordinates in a given direction
 
 
 movePiece : Board -> Direction -> Board
@@ -148,19 +155,16 @@ movePiece board direction =
         currentPiece =
             Maybe.withDefault (initPiece None) board.currentPiece
 
-        newPiece =
-            if canMove board then
-                { pieceType = currentPiece.pieceType
-                , coordinates = List.map (\( x, y ) -> ( x + xOffset, y + yOffset )) currentPiece.coordinates
-                }
-            else
-                (initPiece None)
+        proposedPiece =
+            { pieceType = currentPiece.pieceType
+            , coordinates = List.map (\( x, y ) -> ( x + xOffset, y + yOffset )) currentPiece.coordinates
+            }
 
-        newBoard =
-            if canMove board then
-                board
+        ( newBoard, newPiece ) =
+            if canMove board proposedPiece then
+                ( board, proposedPiece )
             else
-                placePiece board currentPiece
+                ( placePiece board currentPiece, initPiece None )
     in
         { rows = newBoard.rows, currentPiece = (Just newPiece), lost = newBoard.lost }
 

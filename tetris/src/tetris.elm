@@ -39,11 +39,11 @@ updateOnTimeTick : Model -> Model
 updateOnTimeTick board =
     let
         currentPiece =
-            Maybe.withDefault (initPiece None "") board.currentPiece
+            Maybe.withDefault (initPiece None) board.currentPiece
     in
         case currentPiece.pieceType of
             None ->
-                newPiece board (initPiece LShape "blue")
+                newPiece board (initPiece LShape)
 
             _ ->
                 movePiece board Down
