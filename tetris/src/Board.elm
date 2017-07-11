@@ -1,4 +1,5 @@
-module Board exposing (..)
+import Board exposing (..)
+
 
 import List exposing (..)
 import List.Extra exposing (..)

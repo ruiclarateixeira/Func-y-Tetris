@@ -1,4 +1,4 @@
-module MyUtils exposing (combineLists)
+import MyUtils exposing (combineLists)
 
 import List exposing (length, map, concat)
 
@@ -6,6 +6,8 @@ import List exposing (length, map, concat)
 -- Combines two lists into all possible combinations of pairs
 -- eg.  combineLists ["a", "b", "c"] [1, 2, 3]
 --      [ ("a", 1), ("a", 2),  ("a", 3), ("b", 1) ...
+
+
 
 
 combineLists : List a -> List b -> List ( a, b )
