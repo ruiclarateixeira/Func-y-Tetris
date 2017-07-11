@@ -8,6 +8,7 @@ import Board exposing (..)
 import Time exposing (..)
 import Keyboard exposing (..)
 import Char exposing (..)
+import Random exposing (..)
 
 
 main : Program Never Model Msg
@@ -36,9 +37,10 @@ type Msg
     = Flip
     | TimeTick Time
     | Presses Char
+    | NewPiece Int
 
 
-updateOnTimeTick : Model -> Model
+updateOnTimeTick : Model -> ( Model, Cmd Msg )
 updateOnTimeTick board =
     let
         currentPiece =
@@ -46,10 +48,10 @@ updateOnTimeTick board =
     in
         case currentPiece.pieceType of
             None ->
-                newPiece board (initPiece LShape)
+                ( board, Random.generate NewPiece (Random.int 0 1) )
 
             _ ->
-                movePiece board Down
+                ( movePiece board Down, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -59,10 +61,21 @@ update msg model =
             ( model, Cmd.none )
 
         TimeTick time ->
-            ( updateOnTimeTick model, Cmd.none )
+            updateOnTimeTick model
 
         Presses code ->
             ( slide model code, Cmd.none )
+
+        NewPiece n ->
+            case n of
+                0 ->
+                    ( newPiece model (initPiece LShape), Cmd.none )
+
+                1 ->
+                    ( newPiece model (initPiece TShape), Cmd.none )
+
+                _ ->
+                    ( newPiece model (initPiece LShape), Cmd.none )
 
 
 
