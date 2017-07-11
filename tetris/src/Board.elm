@@ -13,11 +13,14 @@ type Cell
 
 type PieceType
     = LShape
+    | TShape
     | None
 
 
 type Direction
     = Down
+    | Left
+    | Right
 
 
 type alias Row =
@@ -119,6 +122,23 @@ projectBoard board =
 
 
 
+-- 1. Going outside of the x range
+
+
+canShift : Board -> Piece -> Bool
+canShift board piece =
+    let
+        cellsInFirstOrLastColumn =
+            let
+                row =
+                    Maybe.withDefault { cells = [] } (getAt 0 board.rows)
+            in
+                filter (\( x, y ) -> x < 0 || x >= (length row.cells)) piece.coordinates
+    in
+        length cellsInFirstOrLastColumn == 0
+
+
+
 -- Can the piece move to a new place without:
 -- 1. Going further down than the min y
 -- 2. Entering other filled cells
@@ -152,6 +172,12 @@ movePiece board direction =
                 Down ->
                     ( 0, -1 )
 
+                Left ->
+                    ( -1, 0 )
+
+                Right ->
+                    ( 1, 0 )
+
         currentPiece =
             Maybe.withDefault (initPiece None) board.currentPiece
 
@@ -161,12 +187,35 @@ movePiece board direction =
             }
 
         ( newBoard, newPiece ) =
-            if canMove board proposedPiece then
+            if not (canShift board proposedPiece) then
+                ( board, currentPiece )
+            else if canMove board proposedPiece then
                 ( board, proposedPiece )
             else
                 ( placePiece board currentPiece, initPiece None )
     in
         { rows = newBoard.rows, currentPiece = (Just newPiece), lost = newBoard.lost }
+
+
+
+-- Slide the piece manually given a key pressed
+
+
+slide : Board -> Char -> Board
+slide board code =
+    let
+        direction =
+            case code of
+                'a' ->
+                    Left
+
+                'd' ->
+                    Right
+
+                _ ->
+                    Down
+    in
+        movePiece board direction
 
 
 
@@ -179,6 +228,11 @@ initPiece pieceType =
         LShape ->
             { pieceType = LShape
             , coordinates = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 1, 0 ) ]
+            }
+
+        TShape ->
+            { pieceType = TShape
+            , coordinates = [ ( 1, 0 ), ( 0, 1 ), ( 1, 1 ), ( 2, 1 ) ]
             }
 
         None ->

@@ -6,6 +6,8 @@ module Main exposing (..)
 import Html exposing (..)
 import Board exposing (..)
 import Time exposing (..)
+import Keyboard exposing (..)
+import Char exposing (..)
 
 
 main : Program Never Model Msg
@@ -33,6 +35,7 @@ type alias Model =
 type Msg
     = Flip
     | TimeTick Time
+    | Presses Char
 
 
 updateOnTimeTick : Model -> Model
@@ -58,6 +61,9 @@ update msg model =
         TimeTick time ->
             ( updateOnTimeTick model, Cmd.none )
 
+        Presses code ->
+            ( slide model code, Cmd.none )
+
 
 
 -- Init
@@ -74,7 +80,10 @@ init =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    every second TimeTick
+    Sub.batch
+        [ every second TimeTick
+        , Keyboard.presses (\code -> Presses (fromCode code))
+        ]
 
 
 
