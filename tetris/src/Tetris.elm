@@ -48,7 +48,7 @@ updateOnTimeTick board =
     in
         case currentPiece.pieceType of
             None ->
-                ( board, Random.generate NewPiece (Random.int 0 1) )
+                ( board, Random.generate NewPiece (Random.int 0 4) )
 
             _ ->
                 ( movePiece board Down, Cmd.none )
@@ -73,6 +73,15 @@ update msg model =
 
                 1 ->
                     ( newPiece model (initPiece TShape), Cmd.none )
+
+                2 ->
+                    ( newPiece model (initPiece IShape), Cmd.none )
+
+                3 ->
+                    ( newPiece model (initPiece SShape), Cmd.none )
+
+                4 ->
+                    ( newPiece model (initPiece OShape), Cmd.none )
 
                 _ ->
                     ( newPiece model (initPiece LShape), Cmd.none )

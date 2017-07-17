@@ -6,14 +6,12 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 
 
-type Cell
-    = Filled
-    | Empty
-
-
 type PieceType
     = LShape
     | TShape
+    | IShape
+    | SShape
+    | OShape
     | None
 
 
@@ -24,7 +22,7 @@ type Direction
 
 
 type alias Row =
-    { cells : List Cell }
+    { cells : List PieceType }
 
 
 type alias Board =
@@ -48,7 +46,7 @@ initBoard : Int -> Int -> Board
 initBoard height width =
     { rows =
         repeat height
-            ({ cells = repeat width Empty })
+            ({ cells = repeat width None })
     , currentPiece = Nothing
     , lost = False
     }
@@ -87,10 +85,10 @@ newPiece board piece =
 placePiece : Board -> Piece -> Board
 placePiece board piece =
     let
-        updateCell : ( Int, Int ) -> Maybe Cell
+        updateCell : ( Int, Int ) -> Maybe PieceType
         updateCell position =
             if (List.member position piece.coordinates) then
-                (Just Filled)
+                (Just piece.pieceType)
             else
                 Nothing
 
@@ -150,12 +148,12 @@ canMove board piece =
         cellsInLastRow =
             filter (\( x, y ) -> y < 0) piece.coordinates
 
-        row : Int -> List Cell
+        row : Int -> List PieceType
         row rowIndex =
             (Maybe.withDefault { cells = [] } (getAt rowIndex board.rows)).cells
 
         cellsWhichWillEnterAFilledCell =
-            filter (\( x, y ) -> (Maybe.withDefault Empty (getAt x (row y)) /= Empty)) piece.coordinates
+            filter (\( x, y ) -> (Maybe.withDefault None (getAt x (row y)) /= None)) piece.coordinates
     in
         length cellsInLastRow == 0 && length cellsWhichWillEnterAFilledCell == 0
 
@@ -235,6 +233,21 @@ initPiece pieceType =
             , coordinates = [ ( 1, 0 ), ( 0, 1 ), ( 1, 1 ), ( 2, 1 ) ]
             }
 
+        IShape ->
+            { pieceType = IShape
+            , coordinates = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 0, 3 ) ]
+            }
+
+        SShape ->
+            { pieceType = SShape
+            , coordinates = [ ( 0, 0 ), ( 1, 0 ), ( 1, 1 ), ( 2, 1 ) ]
+            }
+
+        OShape ->
+            { pieceType = OShape
+            , coordinates = [ ( 0, 0 ), ( 0, 1 ), ( 1, 0 ), ( 1, 1 ) ]
+            }
+
         None ->
             { pieceType = None
             , coordinates = []
@@ -270,15 +283,27 @@ renderRow row =
 -- Render cell as an HTML colored div
 
 
-renderCell : Cell -> Html msg
-renderCell cell =
+renderCell : PieceType -> Html msg
+renderCell pieceType =
     let
         backgroundColor =
-            case cell of
-                Filled ->
+            case pieceType of
+                LShape ->
                     "blue"
 
-                Empty ->
+                TShape ->
+                    "red"
+
+                IShape ->
+                    "purple"
+
+                SShape ->
+                    "yellow"
+
+                OShape ->
+                    "green"
+
+                None ->
                     "black"
     in
         div
@@ -287,6 +312,7 @@ renderCell cell =
                 [ ( "float", "left" )
                 , ( "height", "30px" )
                 , ( "width", "30px" )
+                , ( "margin", "0.5px" )
                 , ( "background-color", backgroundColor )
                 ]
             ]

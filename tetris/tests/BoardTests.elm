@@ -47,15 +47,15 @@ all =
                     in
                         Expect.equal boardWithPiece
                             { rows =
-                                [ { cells = repeat 10 Empty }
-                                , { cells = repeat 10 Empty }
-                                , { cells = repeat 10 Empty }
-                                , { cells = repeat 10 Empty }
+                                [ { cells = repeat 10 None }
+                                , { cells = repeat 10 None }
+                                , { cells = repeat 10 None }
+                                , { cells = repeat 10 None }
                                 , { cells =
                                         List.concat
-                                            [ (repeat 4 Empty)
-                                            , (repeat 2 Filled)
-                                            , (repeat 4 Empty)
+                                            [ (repeat 4 None)
+                                            , (repeat 2 LShape)
+                                            , (repeat 4 None)
                                             ]
                                   }
                                 ]
@@ -86,21 +86,21 @@ all =
                     in
                         Expect.equal boardWithPiece
                             { rows =
-                                [ { cells = repeat 10 Empty }
-                                , { cells = repeat 10 Empty }
-                                , { cells = repeat 10 Empty }
+                                [ { cells = repeat 10 None }
+                                , { cells = repeat 10 None }
+                                , { cells = repeat 10 None }
                                 , { cells =
                                         List.concat
-                                            [ (repeat 4 Empty)
-                                            , (repeat 2 Filled)
-                                            , (repeat 4 Empty)
+                                            [ (repeat 4 None)
+                                            , (repeat 2 LShape)
+                                            , (repeat 4 None)
                                             ]
                                   }
                                 , { cells =
                                         List.concat
-                                            [ (repeat 4 Empty)
-                                            , (repeat 1 Filled)
-                                            , (repeat 5 Empty)
+                                            [ (repeat 4 None)
+                                            , (repeat 1 LShape)
+                                            , (repeat 5 None)
                                             ]
                                   }
                                 ]
