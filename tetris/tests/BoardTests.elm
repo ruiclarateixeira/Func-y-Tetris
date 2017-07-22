@@ -2,7 +2,6 @@ module BoardTests exposing (..)
 
 import Test exposing (..)
 import List exposing (length, filter, repeat)
-import Maybe exposing (withDefault)
 import Expect
 import Board exposing (..)
 
