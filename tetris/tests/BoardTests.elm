@@ -36,11 +36,8 @@ all =
                         board =
                             Board.initBoard 5 10
 
-                        newPiece =
-                            Board.initPiece Board.LShape
-
                         newBoard =
-                            Board.newPiece board newPiece
+                            Board.newPiece board Board.LShape
 
                         boardWithPiece =
                             Board.projectBoard newBoard
@@ -60,11 +57,10 @@ all =
                                   }
                                 ]
                             , currentPiece =
-                                (Just
-                                    { pieceType = Board.LShape
-                                    , coordinates = [ ( 4, 4 ), ( 4, 5 ), ( 4, 6 ), ( 5, 4 ) ]
-                                    }
-                                )
+                                { pieceType = Board.LShape
+                                , position = [ ( 4, 4 ), ( 4, 5 ), ( 4, 6 ), ( 5, 4 ) ]
+                                , baseCoordinates = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 1, 0 ) ]
+                                }
                             , lost = False
                             }
             ]
@@ -75,11 +71,8 @@ all =
                         board =
                             Board.initBoard 5 10
 
-                        newPiece =
-                            Board.initPiece Board.LShape
-
                         newBoard =
-                            Board.newPiece board newPiece
+                            Board.newPiece board Board.LShape
 
                         boardWithPiece =
                             Board.projectBoard (Board.movePiece newBoard Board.Down)
@@ -105,11 +98,10 @@ all =
                                   }
                                 ]
                             , currentPiece =
-                                (Just
-                                    { pieceType = Board.LShape
-                                    , coordinates = [ ( 4, 3 ), ( 4, 4 ), ( 4, 5 ), ( 5, 3 ) ]
-                                    }
-                                )
+                                { pieceType = Board.LShape
+                                , position = [ ( 4, 3 ), ( 4, 4 ), ( 4, 5 ), ( 5, 3 ) ]
+                                , baseCoordinates = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 1, 0 ) ]
+                                }
                             , lost = False
                             }
             ]
