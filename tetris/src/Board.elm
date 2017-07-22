@@ -27,14 +27,15 @@ type alias Row =
 
 type alias Board =
     { rows : List Row
-    , currentPiece : Maybe Piece
+    , currentPiece : Piece
     , lost : Bool
     }
 
 
 type alias Piece =
     { pieceType : PieceType
-    , coordinates : List ( Int, Int )
+    , baseCoordinates : List ( Int, Int )
+    , position : List ( Int, Int )
     }
 
 
@@ -47,14 +48,17 @@ initBoard height width =
     { rows =
         repeat height
             ({ cells = repeat width None })
-    , currentPiece = Nothing
+    , currentPiece = initPiece None
     , lost = False
     }
 
 
-newPiece : Board -> Piece -> Board
-newPiece board piece =
+newPiece : Board -> PieceType -> Board
+newPiece board pieceType =
     let
+        piece =
+            initPiece pieceType
+
         firstRowCells =
             (Maybe.withDefault { cells = [] } (List.head board.rows)).cells
 
@@ -70,12 +74,12 @@ newPiece board piece =
 
         position : List ( Int, Int )
         position =
-            List.map increment piece.coordinates
+            List.map increment piece.position
 
         newPiece =
-            { pieceType = piece.pieceType, coordinates = position }
+            { pieceType = piece.pieceType, position = position, baseCoordinates = piece.baseCoordinates }
     in
-        { rows = board.rows, currentPiece = (Just newPiece), lost = board.lost }
+        { rows = board.rows, currentPiece = newPiece, lost = board.lost }
 
 
 
@@ -87,7 +91,7 @@ placePiece board piece =
     let
         updateCell : ( Int, Int ) -> Maybe PieceType
         updateCell position =
-            if (List.member position piece.coordinates) then
+            if (List.member position piece.position) then
                 (Just piece.pieceType)
             else
                 Nothing
@@ -112,11 +116,7 @@ placePiece board piece =
 
 projectBoard : Board -> Board
 projectBoard board =
-    let
-        piece =
-            Maybe.withDefault (initPiece None) board.currentPiece
-    in
-        placePiece board piece
+    placePiece board board.currentPiece
 
 
 
@@ -131,7 +131,7 @@ canShift board piece =
                 row =
                     Maybe.withDefault { cells = [] } (getAt 0 board.rows)
             in
-                filter (\( x, y ) -> x < 0 || x >= (length row.cells)) piece.coordinates
+                filter (\( x, y ) -> x < 0 || x >= (length row.cells)) piece.position
     in
         length cellsInFirstOrLastColumn == 0
 
@@ -146,14 +146,14 @@ canMove : Board -> Piece -> Bool
 canMove board piece =
     let
         cellsInLastRow =
-            filter (\( x, y ) -> y < 0) piece.coordinates
+            filter (\( x, y ) -> y < 0) piece.position
 
         row : Int -> List PieceType
         row rowIndex =
             (Maybe.withDefault { cells = [] } (getAt rowIndex board.rows)).cells
 
         cellsWhichWillEnterAFilledCell =
-            filter (\( x, y ) -> (Maybe.withDefault None (getAt x (row y)) /= None)) piece.coordinates
+            filter (\( x, y ) -> (Maybe.withDefault None (getAt x (row y)) /= None)) piece.position
     in
         length cellsInLastRow == 0 && length cellsWhichWillEnterAFilledCell == 0
 
@@ -176,23 +176,21 @@ movePiece board direction =
                 Right ->
                     ( 1, 0 )
 
-        currentPiece =
-            Maybe.withDefault (initPiece None) board.currentPiece
-
         proposedPiece =
-            { pieceType = currentPiece.pieceType
-            , coordinates = List.map (\( x, y ) -> ( x + xOffset, y + yOffset )) currentPiece.coordinates
+            { pieceType = board.currentPiece.pieceType
+            , position = List.map (\( x, y ) -> ( x + xOffset, y + yOffset )) board.currentPiece.position
+            , baseCoordinates = board.currentPiece.baseCoordinates
             }
 
         ( newBoard, newPiece ) =
             if not (canShift board proposedPiece) then
-                ( board, currentPiece )
+                ( board, board.currentPiece )
             else if canMove board proposedPiece then
                 ( board, proposedPiece )
             else
-                ( placePiece board currentPiece, initPiece None )
+                ( placePiece board board.currentPiece, initPiece None )
     in
-        { rows = newBoard.rows, currentPiece = (Just newPiece), lost = newBoard.lost }
+        { rows = newBoard.rows, currentPiece = newPiece, lost = newBoard.lost }
 
 
 
@@ -220,37 +218,58 @@ slide board code =
 {- Piece Functions -}
 
 
+rotatePiece : Board -> Board
+rotatePiece board =
+    let
+        rotate ( x, y ) =
+            ( y, x )
+
+        newPosition =
+            List.map rotate board.currentPiece.position
+    in
+        { currentPiece = { pieceType = board.currentPiece.pieceType, position = newPosition, baseCoordinates = board.currentPiece.baseCoordinates }
+        , rows = board.rows
+        , lost = board.lost
+        }
+
+
 initPiece : PieceType -> Piece
 initPiece pieceType =
     case pieceType of
         LShape ->
             { pieceType = LShape
-            , coordinates = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 1, 0 ) ]
+            , baseCoordinates = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 1, 0 ) ]
+            , position = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 1, 0 ) ]
             }
 
         TShape ->
             { pieceType = TShape
-            , coordinates = [ ( 1, 0 ), ( 0, 1 ), ( 1, 1 ), ( 2, 1 ) ]
+            , baseCoordinates = [ ( 1, 0 ), ( 0, 1 ), ( 1, 1 ), ( 2, 1 ) ]
+            , position = [ ( 1, 0 ), ( 0, 1 ), ( 1, 1 ), ( 2, 1 ) ]
             }
 
         IShape ->
             { pieceType = IShape
-            , coordinates = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 0, 3 ) ]
+            , baseCoordinates = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 0, 3 ) ]
+            , position = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 0, 3 ) ]
             }
 
         SShape ->
             { pieceType = SShape
-            , coordinates = [ ( 0, 0 ), ( 1, 0 ), ( 1, 1 ), ( 2, 1 ) ]
+            , baseCoordinates = [ ( 0, 0 ), ( 1, 0 ), ( 1, 1 ), ( 2, 1 ) ]
+            , position = [ ( 0, 0 ), ( 1, 0 ), ( 1, 1 ), ( 2, 1 ) ]
             }
 
         OShape ->
             { pieceType = OShape
-            , coordinates = [ ( 0, 0 ), ( 0, 1 ), ( 1, 0 ), ( 1, 1 ) ]
+            , baseCoordinates = [ ( 0, 0 ), ( 0, 1 ), ( 1, 0 ), ( 1, 1 ) ]
+            , position = [ ( 0, 0 ), ( 0, 1 ), ( 1, 0 ), ( 1, 1 ) ]
             }
 
         None ->
             { pieceType = None
-            , coordinates = []
+            , baseCoordinates = []
+            , position = []
             }
 
 

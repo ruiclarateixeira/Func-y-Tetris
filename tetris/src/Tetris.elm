@@ -42,16 +42,12 @@ type Msg
 
 updateOnTimeTick : Model -> ( Model, Cmd Msg )
 updateOnTimeTick board =
-    let
-        currentPiece =
-            Maybe.withDefault (initPiece None) board.currentPiece
-    in
-        case currentPiece.pieceType of
-            None ->
-                ( board, Random.generate NewPiece (Random.int 0 4) )
+    case board.currentPiece.pieceType of
+        None ->
+            ( board, Random.generate NewPiece (Random.int 0 0) )
 
-            _ ->
-                ( movePiece board Down, Cmd.none )
+        _ ->
+            ( movePiece board Down, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -64,27 +60,32 @@ update msg model =
             updateOnTimeTick model
 
         Presses code ->
-            ( slide model code, Cmd.none )
+            case code of
+                's' ->
+                    ( rotatePiece model, Cmd.none )
+
+                _ ->
+                    ( slide model code, Cmd.none )
 
         NewPiece n ->
             case n of
                 0 ->
-                    ( newPiece model (initPiece LShape), Cmd.none )
+                    ( newPiece model LShape, Cmd.none )
 
                 1 ->
-                    ( newPiece model (initPiece TShape), Cmd.none )
+                    ( newPiece model TShape, Cmd.none )
 
                 2 ->
-                    ( newPiece model (initPiece IShape), Cmd.none )
+                    ( newPiece model IShape, Cmd.none )
 
                 3 ->
-                    ( newPiece model (initPiece SShape), Cmd.none )
+                    ( newPiece model SShape, Cmd.none )
 
                 4 ->
-                    ( newPiece model (initPiece OShape), Cmd.none )
+                    ( newPiece model OShape, Cmd.none )
 
                 _ ->
-                    ( newPiece model (initPiece LShape), Cmd.none )
+                    ( newPiece model LShape, Cmd.none )
 
 
 
