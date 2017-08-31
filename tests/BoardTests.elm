@@ -58,7 +58,7 @@ all =
                                 ]
                             , currentPiece =
                                 { pieceType = LShape
-                                , position = [ ( 4, 4 ), ( 4, 5 ), ( 4, 6 ), ( 5, 4 ) ]
+                                , position = ( 4, 4 )
                                 , baseCoordinates = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 1, 0 ) ]
                                 }
                             , lost = False
@@ -99,7 +99,7 @@ all =
                                 ]
                             , currentPiece =
                                 { pieceType = LShape
-                                , position = [ ( 4, 3 ), ( 4, 4 ), ( 4, 5 ), ( 5, 3 ) ]
+                                , position = ( 4, 3 )
                                 , baseCoordinates = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 1, 0 ) ]
                                 }
                             , lost = False
