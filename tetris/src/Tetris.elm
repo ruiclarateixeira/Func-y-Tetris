@@ -5,6 +5,7 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Board exposing (..)
+import Pieces exposing (..)
 import Time exposing (..)
 import Keyboard exposing (..)
 import Char exposing (..)
