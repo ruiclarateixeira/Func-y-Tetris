@@ -1,6 +1,7 @@
 module Pieces exposing (..)
 
 import List exposing (..)
+import MyUtils exposing (findLargestCoordinates)
 
 
 type PieceType
@@ -71,6 +72,28 @@ getPieceCoordinates piece =
         map offset piece.baseCoordinates
 
 
-getPieceMatrix : Piece -> List (List ( Int, Int ))
+getPieceMatrix : Piece -> List (List PieceType)
 getPieceMatrix piece =
-    [ [ ( 0, 0 ) ] ]
+    let
+        ( lx, ly ) =
+            findLargestCoordinates (getPieceCoordinates piece)
+
+        squareMatrixSide =
+            (max lx ly) + 1
+
+        matrix =
+            repeat squareMatrixSide (repeat squareMatrixSide None)
+
+        fillCell x y cell =
+            if (member ( x, y ) piece.baseCoordinates) then
+                piece.pieceType
+            else
+                cell
+
+        fillRow rowIndex row =
+            indexedMap (\cellIndex cell -> fillCell cellIndex rowIndex cell) row
+
+        filledMatrix =
+            indexedMap (\index row -> fillRow index row) matrix
+    in
+        matrix
