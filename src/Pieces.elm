@@ -69,3 +69,8 @@ getPieceCoordinates piece =
             ( x + posX, y + posY )
     in
         map offset piece.baseCoordinates
+
+
+getPieceMatrix : Piece -> List (List ( Int, Int ))
+getPieceMatrix piece =
+    [ [ ( 0, 0 ) ] ]
