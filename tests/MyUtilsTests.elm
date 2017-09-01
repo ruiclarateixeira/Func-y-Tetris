@@ -8,7 +8,7 @@ import MyUtils exposing (..)
 all : Test
 all =
     describe "Utils test suite"
-        [ describe "get largest coordinates"
+        [ describe "find largest coordinates"
             [ test "empty array doesn't explode" <|
                 \() ->
                     Expect.equal (MyUtils.findLargestCoordinates []) ( 0, 0 )
@@ -27,5 +27,25 @@ all =
             , test "Oshape coordinates works" <|
                 \() ->
                     Expect.equal (MyUtils.findLargestCoordinates [ ( 0, 0 ), ( 0, 1 ), ( 1, 0 ), ( 1, 1 ) ]) ( 1, 1 )
+            ]
+        , describe "matrix rotation"
+            [ test "rotate square matrix" <|
+                \() ->
+                    let
+                        og =
+                            [ [ 1, 2, 3, 4 ]
+                            , [ 5, 6, 7, 8 ]
+                            , [ 9, 0, 1, 2 ]
+                            , [ 3, 4, 5, 6 ]
+                            ]
+
+                        ex =
+                            [ [ Just 4, Just 8, Just 2, Just 6 ]
+                            , [ Just 3, Just 7, Just 1, Just 5 ]
+                            , [ Just 2, Just 6, Just 0, Just 4 ]
+                            , [ Just 1, Just 5, Just 9, Just 3 ]
+                            ]
+                    in
+                        Expect.equal (rotateSquareMatrix og) ex
             ]
         ]

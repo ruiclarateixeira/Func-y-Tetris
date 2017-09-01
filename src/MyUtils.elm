@@ -1,6 +1,7 @@
-module MyUtils exposing (combineLists, findLargestCoordinates)
+module MyUtils exposing (combineLists, findLargestCoordinates, rotateSquareMatrix)
 
 import List exposing (length, map, concat)
+import List.Extra exposing (getAt)
 
 
 -- Combines two lists into all possible combinations of pairs
@@ -64,3 +65,40 @@ findLargestCoordinates coordinates =
                     recursive (List.tail cs) (Just current)
     in
         recursive t h
+
+
+indexed2DMap : (( Int, Int ) -> a -> b) -> List (List a) -> List (List b)
+indexed2DMap f matrix =
+    let
+        projectCell cellIndex rowIndex cell =
+            f ( cellIndex, rowIndex ) cell
+
+        projectRow rowIndex row =
+            List.indexedMap (\cellIndex cell -> projectCell cellIndex rowIndex cell) row
+    in
+        List.indexedMap projectRow matrix
+
+
+rotateSquareMatrix : List (List a) -> List (List (Maybe a))
+rotateSquareMatrix input =
+    let
+        side =
+            length input
+
+        newMatrix =
+            List.repeat side (List.repeat side Nothing)
+
+        rotate ( x, y ) cell =
+            let
+                fromX =
+                    side - y - 1
+
+                fromY =
+                    x
+
+                cRow =
+                    Maybe.withDefault [] (getAt fromY input)
+            in
+                getAt fromX cRow
+    in
+        indexed2DMap rotate input
