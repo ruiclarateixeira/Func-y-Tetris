@@ -19,14 +19,10 @@ elm test
 ### Playing
 * A - Slide piece left
 * D - Slide piece right
-* S - Rotate (Not implemented yet)
+* Q - Rotate
 * Any Other - Move piece down
 
 ### TODO
-* Piece Rotation
 * Detect game finished
 * Clean up row once filled
 * Keep Score
-
-### Known Issues
-* When piece slides sideways twice in a row into a wall or another piece it will stop moving down

@@ -107,34 +107,8 @@ projectBoard board =
     placePiece board board.currentPiece
 
 
-
--- 1. Going outside of the x range
-
-
-canShift : Board -> Piece -> Bool
-canShift board piece =
-    let
-        pieceCoordinates =
-            getPieceCoordinates piece
-
-        cellsInFirstOrLastColumn =
-            let
-                row =
-                    Maybe.withDefault { cells = [] } (getAt 0 board.rows)
-            in
-                filter (\( x, y ) -> x < 0 || x >= (length row.cells)) pieceCoordinates
-    in
-        length cellsInFirstOrLastColumn == 0
-
-
-
--- Can the piece move to a new place without:
--- 1. Going further down than the min y
--- 2. Entering other filled cells
-
-
-canMove : Board -> Piece -> Bool
-canMove board piece =
+pieceWillEnterCell : Board -> Piece -> Bool
+pieceWillEnterCell board piece =
     let
         pieceCoordinates =
             getPieceCoordinates piece
@@ -149,7 +123,47 @@ canMove board piece =
         cellsWhichWillEnterAFilledCell =
             filter (\( x, y ) -> (Maybe.withDefault None (getAt x (row y)) /= None)) pieceCoordinates
     in
-        length cellsInLastRow == 0 && length cellsWhichWillEnterAFilledCell == 0
+        length cellsWhichWillEnterAFilledCell /= 0
+
+
+
+-- Can the piece move to the sides
+-- 1. Going outside of the x range
+-- 2. Going into a new cell
+
+
+canMoveSides : Board -> Piece -> Bool
+canMoveSides board piece =
+    let
+        pieceCoordinates =
+            getPieceCoordinates piece
+
+        cellsInFirstOrLastColumn =
+            let
+                row =
+                    Maybe.withDefault { cells = [] } (getAt 0 board.rows)
+            in
+                filter (\( x, y ) -> x < 0 || x >= (length row.cells)) pieceCoordinates
+    in
+        length cellsInFirstOrLastColumn == 0 && not (pieceWillEnterCell board piece)
+
+
+
+-- Can the piece move down
+-- 1. Going further down than the min y
+-- 2. Entering other filled cells
+
+
+canMoveDown : Board -> Piece -> Bool
+canMoveDown board piece =
+    let
+        pieceCoordinates =
+            getPieceCoordinates piece
+
+        cellsInLastRow =
+            filter (\( x, y ) -> y < 0) pieceCoordinates
+    in
+        length cellsInLastRow == 0 && not (pieceWillEnterCell board piece)
 
 
 
@@ -180,10 +194,12 @@ movePiece board direction =
             }
 
         ( newBoard, newPiece ) =
-            if not (canShift board proposedPiece) then
-                ( board, board.currentPiece )
-            else if canMove board proposedPiece then
+            if direction == Down && (canMoveDown board proposedPiece) then
                 ( board, proposedPiece )
+            else if (direction == Left || direction == Right) && (canMoveSides board proposedPiece) then
+                ( board, proposedPiece )
+            else if (direction == Left || direction == Right) then
+                ( board, board.currentPiece )
             else
                 ( placePiece board board.currentPiece, initPiece None )
     in
@@ -230,10 +246,13 @@ rotatePiece board =
             , position = board.currentPiece.position
             }
     in
-        { rows = board.rows
-        , currentPiece = newPiece
-        , lost = board.lost
-        }
+        if (canMoveDown board newPiece) && (canMoveSides board newPiece) then
+            { rows = board.rows
+            , currentPiece = newPiece
+            , lost = board.lost
+            }
+        else
+            board
 
 
 

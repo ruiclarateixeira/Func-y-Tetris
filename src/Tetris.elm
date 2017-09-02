@@ -45,7 +45,7 @@ updateOnTimeTick : Model -> ( Model, Cmd Msg )
 updateOnTimeTick board =
     case board.currentPiece.pieceType of
         None ->
-            ( board, Random.generate NewPiece (Random.int 0 0) )
+            ( board, Random.generate NewPiece (Random.int 0 4) )
 
         _ ->
             ( movePiece board Down, Cmd.none )
@@ -62,7 +62,7 @@ update msg model =
 
         Presses code ->
             case code of
-                's' ->
+                'q' ->
                     ( rotatePiece model, Cmd.none )
 
                 _ ->
