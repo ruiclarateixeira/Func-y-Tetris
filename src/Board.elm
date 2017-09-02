@@ -2,6 +2,7 @@ module Board exposing (..)
 
 import List exposing (..)
 import List.Extra exposing (..)
+import MyUtils exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Pieces exposing (..)
@@ -216,7 +217,23 @@ slide board code =
 
 rotatePiece : Board -> Board
 rotatePiece board =
-    board
+    let
+        matrix =
+            getPieceMatrix board.currentPiece
+
+        rotated =
+            rotateSquareMatrix matrix
+
+        newPiece =
+            { pieceType = board.currentPiece.pieceType
+            , baseCoordinates = getPieceCoordinatesFromMatrix rotated
+            , position = board.currentPiece.position
+            }
+    in
+        { rows = board.rows
+        , currentPiece = newPiece
+        , lost = board.lost
+        }
 
 
 

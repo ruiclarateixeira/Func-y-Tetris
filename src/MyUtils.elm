@@ -1,4 +1,4 @@
-module MyUtils exposing (combineLists, findLargestCoordinates, rotateSquareMatrix)
+module MyUtils exposing (combineLists, findLargestCoordinates, rotateSquareMatrix, indexed2DMap)
 
 import List exposing (length, map, concat)
 import List.Extra exposing (getAt)
