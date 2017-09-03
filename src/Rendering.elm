@@ -13,9 +13,17 @@ import List exposing (reverse)
 
 renderBoard : Board -> Html msg
 renderBoard board =
-    div
-        [ class "Board" ]
-        (reverse (List.map renderRow board.rows))
+    let
+        scoreText =
+            String.append "Score: " (toString board.score)
+    in
+        div
+            [ class "Board" ]
+            (List.append
+                [ div [] [ text scoreText ]
+                ]
+                (reverse (List.map renderRow board.rows))
+            )
 
 
 

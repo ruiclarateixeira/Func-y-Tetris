@@ -24,5 +24,3 @@ elm test
 
 ### TODO
 * Detect game finished
-* Clean up row once filled
-* Keep Score

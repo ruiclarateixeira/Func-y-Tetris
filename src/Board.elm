@@ -20,6 +20,7 @@ type alias Board =
     { rows : List Row
     , currentPiece : Piece
     , lost : Bool
+    , score : Int
     }
 
 
@@ -34,6 +35,7 @@ initBoard height width =
             ({ cells = repeat width None })
     , currentPiece = initPiece None
     , lost = False
+    , score = 0
     }
 
 
@@ -62,7 +64,7 @@ newPiece board pieceType =
         newPiece =
             { pieceType = piece.pieceType, position = position, baseCoordinates = piece.baseCoordinates }
     in
-        { rows = board.rows, currentPiece = newPiece, lost = board.lost }
+        { rows = board.rows, currentPiece = newPiece, lost = board.lost, score = board.score }
 
 
 
@@ -92,7 +94,7 @@ placePiece board piece =
                     row.cells
             }
     in
-        { rows = List.indexedMap updateCells board.rows, currentPiece = board.currentPiece, lost = board.lost }
+        { rows = List.indexedMap updateCells board.rows, currentPiece = board.currentPiece, lost = board.lost, score = board.score }
 
 
 
@@ -165,6 +167,60 @@ canMoveDown board piece =
 
 
 
+-- Filter Filled Rows
+-- Remove filled rows and add new ones at the top
+
+
+filterFilledRows : List Row -> ( List Row, Int )
+filterFilledRows rows =
+    let
+        filledCellFilter cell =
+            if cell == None then
+                Just cell
+            else
+                Nothing
+
+        filledRowFilter row =
+            let
+                emptyCells =
+                    filterMap filledCellFilter row.cells
+            in
+                if length emptyCells == 0 then
+                    Nothing
+                else
+                    Just row
+
+        newRows =
+            filterMap filledRowFilter rows
+
+        rowDiff =
+            length rows - length newRows
+
+        rowSize =
+            length (Maybe.withDefault { cells = [] } (getAt 0 rows)).cells
+
+        rowsToAdd =
+            repeat rowDiff ({ cells = (repeat rowSize None) })
+    in
+        ( append newRows rowsToAdd, rowDiff )
+
+
+
+-- Post Move Checks
+-- 1. Remove complete lines and increment score
+-- 2. Check for game lost
+
+
+postMoveChecks : Board -> Board
+postMoveChecks board =
+    let
+        ( newRows, rowDiff ) =
+            filterFilledRows board.rows
+    in
+        { rows = newRows, currentPiece = board.currentPiece, lost = board.lost, score = board.score + rowDiff }
+
+
+
 -- Move piece coordinates in a given direction
 
 
@@ -201,7 +257,7 @@ movePiece board direction =
             else
                 ( placePiece board board.currentPiece, initPiece None )
     in
-        { rows = newBoard.rows, currentPiece = newPiece, lost = newBoard.lost }
+        postMoveChecks { rows = newBoard.rows, currentPiece = newPiece, lost = newBoard.lost, score = board.score }
 
 
 
@@ -248,6 +304,7 @@ rotatePiece board =
             { rows = board.rows
             , currentPiece = newPiece
             , lost = board.lost
+            , score = board.score
             }
         else
             board

@@ -62,6 +62,7 @@ all =
                                 , baseCoordinates = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 1, 0 ) ]
                                 }
                             , lost = False
+                            , score = 0
                             }
             ]
         , describe "Move Piece tests"
@@ -103,6 +104,7 @@ all =
                                 , baseCoordinates = [ ( 0, 0 ), ( 0, 1 ), ( 0, 2 ), ( 1, 0 ) ]
                                 }
                             , lost = False
+                            , score = 0
                             }
             ]
         ]
