@@ -4,6 +4,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Board exposing (..)
 import Pieces exposing (..)
 import Rendering exposing (..)
@@ -118,5 +119,6 @@ subscriptions model =
 view : Board -> Html Msg
 view board =
     body []
-        [ renderBoard (projectBoard board)
+        [ (node "meta" [ name "viewport", content "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" ] [])
+        , renderContent board
         ]

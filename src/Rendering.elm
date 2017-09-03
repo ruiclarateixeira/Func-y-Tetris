@@ -1,4 +1,4 @@
-module Rendering exposing (renderBoard)
+module Rendering exposing (renderContent)
 
 import Board exposing (..)
 import Pieces exposing (..)
@@ -77,3 +77,15 @@ renderCell pieceType =
                 ]
             ]
             [ text "" ]
+
+
+renderContent : Board -> Html msg
+renderContent board =
+    div
+        [ class "content"
+        , style
+            [ ( "margin", "0 auto" )
+            , ( "width", "350px" )
+            ]
+        ]
+        [ renderBoard (projectBoard board) ]
