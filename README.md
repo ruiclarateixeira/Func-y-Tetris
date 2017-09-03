@@ -16,6 +16,9 @@ Run tests:
 elm test
 ```
 
+### Try It Out
+https://ruiclarateixeira.github.io/Func-y-Tetris/
+
 ### Playing
 * A - Slide piece left
 * D - Slide piece right
