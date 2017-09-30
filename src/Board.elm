@@ -71,11 +71,20 @@ newPiece board pieceType =
 -- Adds piece to the board in the correct coordinates
 
 
-placePiece : Board -> Piece -> Board
-placePiece board piece =
+placePiece : Board -> Piece -> Bool -> Board
+placePiece board piece checkIfLost =
     let
         pieceCoordinates =
             getPieceCoordinates piece
+
+        coordinatesOutsideBoard =
+            filter (\( x, y ) -> y > (length board.rows)) pieceCoordinates
+
+        lost =
+            if length coordinatesOutsideBoard > 0 then
+                True && checkIfLost
+            else
+                False
 
         updateCell : ( Int, Int ) -> Maybe PieceType
         updateCell position =
@@ -94,7 +103,7 @@ placePiece board piece =
                     row.cells
             }
     in
-        { rows = List.indexedMap updateCells board.rows, currentPiece = board.currentPiece, lost = board.lost, score = board.score }
+        { rows = List.indexedMap updateCells board.rows, currentPiece = board.currentPiece, lost = lost, score = board.score }
 
 
 
@@ -104,7 +113,7 @@ placePiece board piece =
 
 projectBoard : Board -> Board
 projectBoard board =
-    placePiece board board.currentPiece
+    placePiece board board.currentPiece False
 
 
 pieceWillEnterCell : Board -> Piece -> Bool
@@ -208,7 +217,6 @@ filterFilledRows rows =
 
 -- Post Move Checks
 -- 1. Remove complete lines and increment score
--- 2. Check for game lost
 
 
 postMoveChecks : Board -> Board
@@ -255,7 +263,7 @@ movePiece board direction =
             else if (direction == Left || direction == Right) then
                 ( board, board.currentPiece )
             else
-                ( placePiece board board.currentPiece, initPiece None )
+                ( placePiece board board.currentPiece True, initPiece None )
     in
         postMoveChecks { rows = newBoard.rows, currentPiece = newPiece, lost = newBoard.lost, score = board.score }
 

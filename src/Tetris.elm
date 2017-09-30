@@ -45,12 +45,15 @@ type Msg
 
 updateOnTimeTick : Model -> ( Model, Cmd Msg )
 updateOnTimeTick board =
-    case board.currentPiece.pieceType of
-        None ->
-            ( board, Random.generate NewPiece (Random.int 0 4) )
+    if not board.lost then
+        case board.currentPiece.pieceType of
+            None ->
+                ( board, Random.generate NewPiece (Random.int 0 4) )
 
-        _ ->
-            ( movePiece board Down, Cmd.none )
+            _ ->
+                ( movePiece board Down, Cmd.none )
+    else
+        ( board, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

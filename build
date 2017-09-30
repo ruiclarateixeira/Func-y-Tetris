@@ -1,1 +1,1 @@
-elm-make --output out/index.html src/Tetris.elm && cp -r ./out ./docs
+elm-make --output out/index.html src/Tetris.elm && rm -rf ./docs && cp -r ./out ./docs
