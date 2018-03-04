@@ -10428,6 +10428,120 @@ var _elm_lang$html$Html_Attributes$classList = function (list) {
 				A2(_elm_lang$core$List$filter, _elm_lang$core$Tuple$second, list))));
 };
 var _elm_lang$html$Html_Attributes$style = _elm_lang$virtual_dom$VirtualDom$style;
+var _elm_lang$html$Html_Events$keyCode = A2(_elm_lang$core$Json_Decode$field, 'keyCode', _elm_lang$core$Json_Decode$int);
+var _elm_lang$html$Html_Events$targetChecked = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'target',
+		_1: {
+			ctor: '::',
+			_0: 'checked',
+			_1: {ctor: '[]'}
+		}
+	},
+	_elm_lang$core$Json_Decode$bool);
+var _elm_lang$html$Html_Events$targetValue = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'target',
+		_1: {
+			ctor: '::',
+			_0: 'value',
+			_1: {ctor: '[]'}
+		}
+	},
+	_elm_lang$core$Json_Decode$string);
+var _elm_lang$html$Html_Events$defaultOptions = _elm_lang$virtual_dom$VirtualDom$defaultOptions;
+var _elm_lang$html$Html_Events$onWithOptions = _elm_lang$virtual_dom$VirtualDom$onWithOptions;
+var _elm_lang$html$Html_Events$on = _elm_lang$virtual_dom$VirtualDom$on;
+var _elm_lang$html$Html_Events$onFocus = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'focus',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onBlur = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'blur',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onSubmitOptions = _elm_lang$core$Native_Utils.update(
+	_elm_lang$html$Html_Events$defaultOptions,
+	{preventDefault: true});
+var _elm_lang$html$Html_Events$onSubmit = function (msg) {
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'submit',
+		_elm_lang$html$Html_Events$onSubmitOptions,
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onCheck = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'change',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetChecked));
+};
+var _elm_lang$html$Html_Events$onInput = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'input',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetValue));
+};
+var _elm_lang$html$Html_Events$onMouseOut = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseout',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseOver = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseover',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseLeave = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseleave',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseEnter = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseenter',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseUp = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseup',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseDown = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mousedown',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onDoubleClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'dblclick',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'click',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$Options = F2(
+	function (a, b) {
+		return {stopPropagation: a, preventDefault: b};
+	});
 var _elm_lang$keyboard$Keyboard$onSelfMsg = F3(
 	function (router, _p0, state) {
 		var _p1 = _p0;
@@ -10996,9 +11110,21 @@ var _ruiclarateixeira$funandgames$Board$rotatePiece = function (board) {
 	};
 	return (A2(_ruiclarateixeira$funandgames$Board$canMoveDown, board, newPiece) && A2(_ruiclarateixeira$funandgames$Board$canMoveSides, board, newPiece)) ? {rows: board.rows, currentPiece: newPiece, lost: board.lost, score: board.score} : board;
 };
-var _ruiclarateixeira$funandgames$Board$placePiece = F2(
-	function (board, piece) {
+var _ruiclarateixeira$funandgames$Board$placePiece = F3(
+	function (board, piece, checkIfLost) {
 		var pieceCoordinates = _ruiclarateixeira$funandgames$Pieces$getPieceCoordinates(piece);
+		var coordinatesOutsideBoard = A2(
+			_elm_lang$core$List$filter,
+			function (_p10) {
+				var _p11 = _p10;
+				return _elm_lang$core$Native_Utils.cmp(
+					_p11._1,
+					_elm_lang$core$List$length(board.rows)) > 0;
+			},
+			pieceCoordinates);
+		var lost = (_elm_lang$core$Native_Utils.cmp(
+			_elm_lang$core$List$length(coordinatesOutsideBoard),
+			0) > 0) ? (true && checkIfLost) : false;
 		var updateCell = function (position) {
 			return A2(_elm_lang$core$List$member, position, pieceCoordinates) ? _elm_lang$core$Maybe$Just(piece.pieceType) : _elm_lang$core$Maybe$Nothing;
 		};
@@ -11021,12 +11147,12 @@ var _ruiclarateixeira$funandgames$Board$placePiece = F2(
 		return {
 			rows: A2(_elm_lang$core$List$indexedMap, updateCells, board.rows),
 			currentPiece: board.currentPiece,
-			lost: board.lost,
+			lost: lost,
 			score: board.score
 		};
 	});
 var _ruiclarateixeira$funandgames$Board$projectBoard = function (board) {
-	return A2(_ruiclarateixeira$funandgames$Board$placePiece, board, board.currentPiece);
+	return A3(_ruiclarateixeira$funandgames$Board$placePiece, board, board.currentPiece, false);
 };
 var _ruiclarateixeira$funandgames$Board$newPiece = F2(
 	function (board, pieceType) {
@@ -11041,13 +11167,13 @@ var _ruiclarateixeira$funandgames$Board$newPiece = F2(
 				cells: {ctor: '[]'}
 			},
 			_elm_lang$core$List$head(board.rows)).cells;
-		var increment = function (_p10) {
-			var _p11 = _p10;
+		var increment = function (_p12) {
+			var _p13 = _p12;
 			return {
 				ctor: '_Tuple2',
-				_0: (_p11._0 + ((_elm_lang$core$List$length(firstRowCells) / 2) | 0)) - offset(
+				_0: (_p13._0 + ((_elm_lang$core$List$length(firstRowCells) / 2) | 0)) - offset(
 					_elm_lang$core$List$length(firstRowCells)),
-				_1: _p11._1 + (_elm_lang$core$List$length(board.rows) - 1)
+				_1: _p13._1 + (_elm_lang$core$List$length(board.rows) - 1)
 			};
 		};
 		var piece = _ruiclarateixeira$funandgames$Pieces$initPiece(pieceType);
@@ -11076,17 +11202,28 @@ var _ruiclarateixeira$funandgames$Board$Board = F4(
 	function (a, b, c, d) {
 		return {rows: a, currentPiece: b, lost: c, score: d};
 	});
+var _ruiclarateixeira$funandgames$Board$Reset = {ctor: 'Reset'};
+var _ruiclarateixeira$funandgames$Board$NewPiece = function (a) {
+	return {ctor: 'NewPiece', _0: a};
+};
+var _ruiclarateixeira$funandgames$Board$Presses = function (a) {
+	return {ctor: 'Presses', _0: a};
+};
+var _ruiclarateixeira$funandgames$Board$TimeTick = function (a) {
+	return {ctor: 'TimeTick', _0: a};
+};
+var _ruiclarateixeira$funandgames$Board$Flip = {ctor: 'Flip'};
 var _ruiclarateixeira$funandgames$Board$Right = {ctor: 'Right'};
 var _ruiclarateixeira$funandgames$Board$Left = {ctor: 'Left'};
 var _ruiclarateixeira$funandgames$Board$Down = {ctor: 'Down'};
 var _ruiclarateixeira$funandgames$Board$movePiece = F2(
 	function (board, direction) {
-		var _p12 = board.currentPiece.position;
-		var x = _p12._0;
-		var y = _p12._1;
-		var _p13 = function () {
-			var _p14 = direction;
-			switch (_p14.ctor) {
+		var _p14 = board.currentPiece.position;
+		var x = _p14._0;
+		var y = _p14._1;
+		var _p15 = function () {
+			var _p16 = direction;
+			switch (_p16.ctor) {
 				case 'Down':
 					return {ctor: '_Tuple2', _0: 0, _1: -1};
 				case 'Left':
@@ -11095,28 +11232,28 @@ var _ruiclarateixeira$funandgames$Board$movePiece = F2(
 					return {ctor: '_Tuple2', _0: 1, _1: 0};
 			}
 		}();
-		var xOffset = _p13._0;
-		var yOffset = _p13._1;
+		var xOffset = _p15._0;
+		var yOffset = _p15._1;
 		var proposedPiece = {
 			pieceType: board.currentPiece.pieceType,
 			position: {ctor: '_Tuple2', _0: x + xOffset, _1: y + yOffset},
 			baseCoordinates: board.currentPiece.baseCoordinates
 		};
-		var _p15 = (_elm_lang$core$Native_Utils.eq(direction, _ruiclarateixeira$funandgames$Board$Down) && A2(_ruiclarateixeira$funandgames$Board$canMoveDown, board, proposedPiece)) ? {ctor: '_Tuple2', _0: board, _1: proposedPiece} : (((_elm_lang$core$Native_Utils.eq(direction, _ruiclarateixeira$funandgames$Board$Left) || _elm_lang$core$Native_Utils.eq(direction, _ruiclarateixeira$funandgames$Board$Right)) && A2(_ruiclarateixeira$funandgames$Board$canMoveSides, board, proposedPiece)) ? {ctor: '_Tuple2', _0: board, _1: proposedPiece} : ((_elm_lang$core$Native_Utils.eq(direction, _ruiclarateixeira$funandgames$Board$Left) || _elm_lang$core$Native_Utils.eq(direction, _ruiclarateixeira$funandgames$Board$Right)) ? {ctor: '_Tuple2', _0: board, _1: board.currentPiece} : {
+		var _p17 = (_elm_lang$core$Native_Utils.eq(direction, _ruiclarateixeira$funandgames$Board$Down) && A2(_ruiclarateixeira$funandgames$Board$canMoveDown, board, proposedPiece)) ? {ctor: '_Tuple2', _0: board, _1: proposedPiece} : (((_elm_lang$core$Native_Utils.eq(direction, _ruiclarateixeira$funandgames$Board$Left) || _elm_lang$core$Native_Utils.eq(direction, _ruiclarateixeira$funandgames$Board$Right)) && A2(_ruiclarateixeira$funandgames$Board$canMoveSides, board, proposedPiece)) ? {ctor: '_Tuple2', _0: board, _1: proposedPiece} : ((_elm_lang$core$Native_Utils.eq(direction, _ruiclarateixeira$funandgames$Board$Left) || _elm_lang$core$Native_Utils.eq(direction, _ruiclarateixeira$funandgames$Board$Right)) ? {ctor: '_Tuple2', _0: board, _1: board.currentPiece} : {
 			ctor: '_Tuple2',
-			_0: A2(_ruiclarateixeira$funandgames$Board$placePiece, board, board.currentPiece),
+			_0: A3(_ruiclarateixeira$funandgames$Board$placePiece, board, board.currentPiece, true),
 			_1: _ruiclarateixeira$funandgames$Pieces$initPiece(_ruiclarateixeira$funandgames$Pieces$None)
 		}));
-		var newBoard = _p15._0;
-		var newPiece = _p15._1;
+		var newBoard = _p17._0;
+		var newPiece = _p17._1;
 		return _ruiclarateixeira$funandgames$Board$postMoveChecks(
 			{rows: newBoard.rows, currentPiece: newPiece, lost: newBoard.lost, score: board.score});
 	});
 var _ruiclarateixeira$funandgames$Board$slide = F2(
 	function (board, code) {
 		var direction = function () {
-			var _p16 = code;
-			switch (_p16.valueOf()) {
+			var _p18 = code;
+			switch (_p18.valueOf()) {
 				case 'a':
 					return _ruiclarateixeira$funandgames$Board$Left;
 				case 'd':
@@ -11212,7 +11349,20 @@ var _ruiclarateixeira$funandgames$Rendering$renderBoard = function (board) {
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$class('Board'),
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'display', _1: 'table'},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'margin', _1: '0 auto'},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
 		},
 		A2(
 			_elm_lang$core$List$append,
@@ -11231,15 +11381,191 @@ var _ruiclarateixeira$funandgames$Rendering$renderBoard = function (board) {
 			_elm_lang$core$List$reverse(
 				A2(_elm_lang$core$List$map, _ruiclarateixeira$funandgames$Rendering$renderRow, board.rows))));
 };
+var _ruiclarateixeira$funandgames$Rendering$renderLossMessage = function (board) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$style(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'position', _1: 'fixed'},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'height', _1: '100px'},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'width', _1: '240px'},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'margin-left', _1: '-120px'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'top', _1: '35%'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'left', _1: '50%'},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'green'},
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$style(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'float', _1: 'left'},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'width', _1: '100%'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'padding', _1: '25px 0 5px 0'},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'font-size', _1: '2em'},
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('You Lost!'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$style(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'float', _1: 'left'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'width', _1: '100%'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
+										_1: {ctor: '[]'}
+									}
+								}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$button,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_ruiclarateixeira$funandgames$Board$Reset),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Try Again'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _ruiclarateixeira$funandgames$Rendering$renderContent = function (board) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('content'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'margin', _1: '0 auto'},
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _ruiclarateixeira$funandgames$Rendering$renderBoard(
+				_ruiclarateixeira$funandgames$Board$projectBoard(board)),
+			_1: {
+				ctor: '::',
+				_0: board.lost ? _ruiclarateixeira$funandgames$Rendering$renderLossMessage(board) : A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{ctor: '[]'}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _ruiclarateixeira$funandgames$Main$view = function (board) {
 	return A2(
 		_elm_lang$html$Html$body,
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _ruiclarateixeira$funandgames$Rendering$renderBoard(
-				_ruiclarateixeira$funandgames$Board$projectBoard(board)),
-			_1: {ctor: '[]'}
+			_0: A3(
+				_elm_lang$html$Html$node,
+				'meta',
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$name('viewport'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$content('width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'),
+						_1: {ctor: '[]'}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: _ruiclarateixeira$funandgames$Rendering$renderContent(board),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _ruiclarateixeira$funandgames$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$batch(
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _ruiclarateixeira$funandgames$Board$TimeTick),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$keyboard$Keyboard$presses(
+					function (code) {
+						return _ruiclarateixeira$funandgames$Board$Presses(
+							_elm_lang$core$Char$fromCode(code));
+					}),
+				_1: {ctor: '[]'}
+			}
 		});
 };
 var _ruiclarateixeira$funandgames$Main$init = {
@@ -11247,26 +11573,27 @@ var _ruiclarateixeira$funandgames$Main$init = {
 	_0: A2(_ruiclarateixeira$funandgames$Board$initBoard, 20, 10),
 	_1: _elm_lang$core$Platform_Cmd$none
 };
-var _ruiclarateixeira$funandgames$Main$NewPiece = function (a) {
-	return {ctor: 'NewPiece', _0: a};
-};
 var _ruiclarateixeira$funandgames$Main$updateOnTimeTick = function (board) {
-	var _p0 = board.currentPiece.pieceType;
-	if (_p0.ctor === 'None') {
-		return {
-			ctor: '_Tuple2',
-			_0: board,
-			_1: A2(
-				_elm_lang$core$Random$generate,
-				_ruiclarateixeira$funandgames$Main$NewPiece,
-				A2(_elm_lang$core$Random$int, 0, 4))
-		};
+	if (!board.lost) {
+		var _p0 = board.currentPiece.pieceType;
+		if (_p0.ctor === 'None') {
+			return {
+				ctor: '_Tuple2',
+				_0: board,
+				_1: A2(
+					_elm_lang$core$Random$generate,
+					_ruiclarateixeira$funandgames$Board$NewPiece,
+					A2(_elm_lang$core$Random$int, 0, 4))
+			};
+		} else {
+			return {
+				ctor: '_Tuple2',
+				_0: A2(_ruiclarateixeira$funandgames$Board$movePiece, board, _ruiclarateixeira$funandgames$Board$Down),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		}
 	} else {
-		return {
-			ctor: '_Tuple2',
-			_0: A2(_ruiclarateixeira$funandgames$Board$movePiece, board, _ruiclarateixeira$funandgames$Board$Down),
-			_1: _elm_lang$core$Platform_Cmd$none
-		};
+		return {ctor: '_Tuple2', _0: board, _1: _elm_lang$core$Platform_Cmd$none};
 	}
 };
 var _ruiclarateixeira$funandgames$Main$update = F2(
@@ -11293,7 +11620,7 @@ var _ruiclarateixeira$funandgames$Main$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
-			default:
+			case 'NewPiece':
 				var _p4 = _p1._0;
 				switch (_p4) {
 					case 0:
@@ -11333,33 +11660,16 @@ var _ruiclarateixeira$funandgames$Main$update = F2(
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
 				}
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: A2(_ruiclarateixeira$funandgames$Board$initBoard, 20, 10),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 		}
 	});
-var _ruiclarateixeira$funandgames$Main$Presses = function (a) {
-	return {ctor: 'Presses', _0: a};
-};
-var _ruiclarateixeira$funandgames$Main$TimeTick = function (a) {
-	return {ctor: 'TimeTick', _0: a};
-};
-var _ruiclarateixeira$funandgames$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$batch(
-		{
-			ctor: '::',
-			_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _ruiclarateixeira$funandgames$Main$TimeTick),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$keyboard$Keyboard$presses(
-					function (code) {
-						return _ruiclarateixeira$funandgames$Main$Presses(
-							_elm_lang$core$Char$fromCode(code));
-					}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
 var _ruiclarateixeira$funandgames$Main$main = _elm_lang$html$Html$program(
 	{init: _ruiclarateixeira$funandgames$Main$init, view: _ruiclarateixeira$funandgames$Main$view, update: _ruiclarateixeira$funandgames$Main$update, subscriptions: _ruiclarateixeira$funandgames$Main$subscriptions})();
-var _ruiclarateixeira$funandgames$Main$Flip = {ctor: 'Flip'};
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _ruiclarateixeira$funandgames$Main$main !== 'undefined') {

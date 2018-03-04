@@ -2,8 +2,17 @@ module Board exposing (..)
 
 import List exposing (..)
 import List.Extra exposing (..)
+import Time exposing (..)
 import MyUtils exposing (..)
 import Pieces exposing (..)
+
+
+type Msg
+    = Flip
+    | TimeTick Time
+    | Presses Char
+    | NewPiece Int
+    | Reset
 
 
 type Direction

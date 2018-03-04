@@ -36,13 +36,6 @@ type alias Model =
 -- Update
 
 
-type Msg
-    = Flip
-    | TimeTick Time
-    | Presses Char
-    | NewPiece Int
-
-
 updateOnTimeTick : Model -> ( Model, Cmd Msg )
 updateOnTimeTick board =
     if not board.lost then
@@ -92,6 +85,9 @@ update msg model =
 
                 _ ->
                     ( newPiece model LShape, Cmd.none )
+
+        Reset ->
+            ( initBoard 20 10, Cmd.none )
 
 
 

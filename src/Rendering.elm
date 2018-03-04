@@ -4,10 +4,48 @@ import Board exposing (..)
 import Pieces exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import List exposing (reverse)
 
 
 {- Render Functions -}
+
+
+renderLossMessage : Board -> Html Msg
+renderLossMessage board =
+    div
+        [ style
+            [ ( "position", "fixed" )
+            , ( "height", "100px" )
+            , ( "width", "240px" )
+            , ( "margin-left", "-120px" )
+            , ( "top", "35%" )
+            , ( "left", "50%" )
+            , ( "background-color", "green" )
+            ]
+        ]
+        [ div
+            [ style
+                [ ( "float", "left" )
+                , ( "width", "100%" )
+                , ( "text-align", "center" )
+                , ( "padding", "25px 0 5px 0" )
+                , ( "font-size", "2em" )
+                ]
+            ]
+            [ text "You Lost!" ]
+        , div
+            [ style
+                [ ( "float", "left" )
+                , ( "width", "100%" )
+                , ( "text-align", "center" )
+                ]
+            ]
+            [ button [ onClick Reset ] [ text "Try Again" ] ]
+        ]
+
+
+
 -- render board as a sequence of rendered rows
 
 
@@ -18,10 +56,14 @@ renderBoard board =
             String.append "Score: " (toString board.score)
     in
         div
-            [ class "Board" ]
-            (List.append
-                [ div [] [ text scoreText ]
+            [ class "Board"
+            , style
+                [ ( "display", "table" )
+                , ( "margin", "0 auto" )
                 ]
+            ]
+            (List.append
+                [ div [] [ text scoreText ] ]
                 (reverse (List.map renderRow board.rows))
             )
 
@@ -79,13 +121,17 @@ renderCell pieceType =
             [ text "" ]
 
 
-renderContent : Board -> Html msg
+renderContent : Board -> Html Msg
 renderContent board =
     div
         [ class "content"
         , style
             [ ( "margin", "0 auto" )
-            , ( "width", "350px" )
             ]
         ]
-        [ renderBoard (projectBoard board) ]
+        [ renderBoard (projectBoard board)
+        , if board.lost then
+            renderLossMessage board
+          else
+            div [] []
+        ]
