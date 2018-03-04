@@ -11022,7 +11022,9 @@ var _ruiclarateixeira$funandgames$Board$postMoveChecks = function (board) {
 	var _p0 = _ruiclarateixeira$funandgames$Board$filterFilledRows(board.rows);
 	var newRows = _p0._0;
 	var rowDiff = _p0._1;
-	return {rows: newRows, currentPiece: board.currentPiece, lost: board.lost, score: board.score + rowDiff};
+	return _elm_lang$core$Native_Utils.update(
+		board,
+		{rows: newRows, score: board.score + rowDiff});
 };
 var _ruiclarateixeira$funandgames$Board$pieceWillEnterCell = F2(
 	function (board, piece) {
@@ -11108,7 +11110,9 @@ var _ruiclarateixeira$funandgames$Board$rotatePiece = function (board) {
 		baseCoordinates: _ruiclarateixeira$funandgames$Pieces$getPieceCoordinatesFromMatrix(rotated),
 		position: board.currentPiece.position
 	};
-	return (A2(_ruiclarateixeira$funandgames$Board$canMoveDown, board, newPiece) && A2(_ruiclarateixeira$funandgames$Board$canMoveSides, board, newPiece)) ? {rows: board.rows, currentPiece: newPiece, lost: board.lost, score: board.score} : board;
+	return (A2(_ruiclarateixeira$funandgames$Board$canMoveDown, board, newPiece) && A2(_ruiclarateixeira$funandgames$Board$canMoveSides, board, newPiece)) ? _elm_lang$core$Native_Utils.update(
+		board,
+		{currentPiece: newPiece}) : board;
 };
 var _ruiclarateixeira$funandgames$Board$placePiece = F3(
 	function (board, piece, checkIfLost) {
@@ -11144,12 +11148,12 @@ var _ruiclarateixeira$funandgames$Board$placePiece = F3(
 						row.cells)
 				};
 			});
-		return {
-			rows: A2(_elm_lang$core$List$indexedMap, updateCells, board.rows),
-			currentPiece: board.currentPiece,
-			lost: lost,
-			score: board.score
-		};
+		return _elm_lang$core$Native_Utils.update(
+			board,
+			{
+				rows: A2(_elm_lang$core$List$indexedMap, updateCells, board.rows),
+				lost: lost
+			});
 	});
 var _ruiclarateixeira$funandgames$Board$projectBoard = function (board) {
 	return A3(_ruiclarateixeira$funandgames$Board$placePiece, board, board.currentPiece, false);
@@ -11178,8 +11182,12 @@ var _ruiclarateixeira$funandgames$Board$newPiece = F2(
 		};
 		var piece = _ruiclarateixeira$funandgames$Pieces$initPiece(pieceType);
 		var position = increment(piece.position);
-		var newPiece = {pieceType: piece.pieceType, position: position, baseCoordinates: piece.baseCoordinates};
-		return {rows: board.rows, currentPiece: newPiece, lost: board.lost, score: board.score};
+		var newPiece = _elm_lang$core$Native_Utils.update(
+			piece,
+			{position: position});
+		return _elm_lang$core$Native_Utils.update(
+			board,
+			{currentPiece: newPiece});
 	});
 var _ruiclarateixeira$funandgames$Board$initBoard = F2(
 	function (height, width) {
@@ -11247,7 +11255,9 @@ var _ruiclarateixeira$funandgames$Board$movePiece = F2(
 		var newBoard = _p17._0;
 		var newPiece = _p17._1;
 		return _ruiclarateixeira$funandgames$Board$postMoveChecks(
-			{rows: newBoard.rows, currentPiece: newPiece, lost: newBoard.lost, score: board.score});
+			_elm_lang$core$Native_Utils.update(
+				newBoard,
+				{currentPiece: newPiece, score: board.score}));
 	});
 var _ruiclarateixeira$funandgames$Board$slide = F2(
 	function (board, code) {

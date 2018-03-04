@@ -71,9 +71,9 @@ newPiece board pieceType =
             increment piece.position
 
         newPiece =
-            { pieceType = piece.pieceType, position = position, baseCoordinates = piece.baseCoordinates }
+            { piece | position = position }
     in
-        { rows = board.rows, currentPiece = newPiece, lost = board.lost, score = board.score }
+        { board | currentPiece = newPiece }
 
 
 
@@ -112,7 +112,7 @@ placePiece board piece checkIfLost =
                     row.cells
             }
     in
-        { rows = List.indexedMap updateCells board.rows, currentPiece = board.currentPiece, lost = lost, score = board.score }
+        { board | rows = List.indexedMap updateCells board.rows, lost = lost }
 
 
 
@@ -234,7 +234,7 @@ postMoveChecks board =
         ( newRows, rowDiff ) =
             filterFilledRows board.rows
     in
-        { rows = newRows, currentPiece = board.currentPiece, lost = board.lost, score = board.score + rowDiff }
+        { board | rows = newRows, score = board.score + rowDiff }
 
 
 
@@ -274,7 +274,7 @@ movePiece board direction =
             else
                 ( placePiece board board.currentPiece True, initPiece None )
     in
-        postMoveChecks { rows = newBoard.rows, currentPiece = newPiece, lost = newBoard.lost, score = board.score }
+        postMoveChecks { newBoard | currentPiece = newPiece, score = board.score }
 
 
 
@@ -318,10 +318,6 @@ rotatePiece board =
             }
     in
         if (canMoveDown board newPiece) && (canMoveSides board newPiece) then
-            { rows = board.rows
-            , currentPiece = newPiece
-            , lost = board.lost
-            , score = board.score
-            }
+            { board | currentPiece = newPiece }
         else
             board
