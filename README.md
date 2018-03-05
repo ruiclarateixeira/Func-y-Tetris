@@ -2,7 +2,7 @@
 
 ## Tetris clone written in Elm
 
-### Building 
+### Building
 
 Compile into a single html file:
 
@@ -17,13 +17,19 @@ elm test
 ```
 
 ### Try It Out
+
 https://ruiclarateixeira.github.io/Func-y-Tetris/
 
 ### Playing
+
 * A - Slide piece left
 * D - Slide piece right
 * Q - Rotate
 * Any Other - Move piece down
 
-### TODO
-* Detect game finished
+### Support
+
+| Browser | Supported |
+| ------- | :-------: |
+| Chrome  |    Yes    |
+| Firefox |    No     |
